@@ -25,7 +25,7 @@ async function onReceived(uint8Arr,id){
   let data = protocol.parse(uint8Arr);
   console.log("onRecieved() type="+data.type+" from="+id);
   switch(data.type){
-  	case "cheen":
+    case "cheen":
     case "jreen":
     case "text":
       if(data.toId == "00000000"){
@@ -33,8 +33,8 @@ async function onReceived(uint8Arr,id){
       }else{
         await powtServer.sendDgram(data.toId,uint8Arr);
       }
-  	  break;
-  	default:break;
+      break;
+    default:break;
   }
 }
 
