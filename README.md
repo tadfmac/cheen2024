@@ -1,5 +1,7 @@
 # cheen2024
 
+![ちーん](./www/img/title-icon.png)
+
 10年ぶりの「ちーん」のソースコードです。
 
 ## demo
