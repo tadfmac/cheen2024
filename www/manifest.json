@@ -1,0 +1,14 @@
+{
+  "short_name": "ちーんタイマー",
+  "name": "ちーんタイマー",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/timer",
+  "display": "standalone",
+  "orientation": "portrait"
+}

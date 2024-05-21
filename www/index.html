@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="jp">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" href="/favicon.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>cheen2024</title>
+</head>
+<body>
+<div id="pixi_wrapper"></div>
+<div id="main" class="fullscreen">
+  <div class="c1" id="dtitle"></div>
+</div>
+<div id="header">©︎2024 D.F.Mac.@TripArts Music</div>
+<div id="talogo"></div>
+<div id="statusWrap">
+  <div id="status"></div>
+  <div id="ramp"></div>
+</div>
+<div id="trigWrap">
+  <div id="trigCheen" class="trigButton">
+    <img src="./img/title-icon.png" width="100%">
+  </div>
+  <div id="trigChicken" class="trigButton">
+    <img src="./img/chicken-icon.png" width="100%">
+  </div>
+  <div id="trigText" class="trigButton">
+    <img src="./img/text-icon.png" width="100%">
+  </div>
+</div>
+<div id="outer" class="fullscreen bggreen front">
+  <div class="c1" id="dtitle"></div>
+  <div class="c2" id="dpig"></div>
+  <div id="startMes">ロード中...</div>
+  <div id="start" class="hide">はじめる</div>
+</div>
+<style>
+@font-face {
+  font-family: 'tegaki';
+  src: url('./HuiFont29/HuiFont29.ttf') format('truetype');
+}
+*{
+  padding:0px;
+  margin:0px;
+  box-sizing: border-box;
+  font-family: 'tegaki';
+}
+html{
+  height:100%;
+  width:100%;
+}
+body{
+  height:100%;
+  width:100%;
+  background-image:url("./img/cheen-background.jpeg");
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size: cover;
+}
+.fullscreen{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.hide{
+  display:none!important;
+}
+#statusWrap{
+  position:fixed;
+  right:10px;
+  top:10px;
+  width:180px;
+  height:30px;
+  display: flex;
+  flex-direction: row;
+}
+#ramp{
+  width:30px;
+  height:30px;
+  border-radius: 30px;
+}
+#status{
+  padding-right:10px;
+  width:150px;
+  font-size:20px;
+  line-height:30px;
+  vertical-align: middle;
+  text-align:right;
+}
+#trigWrap{
+  position:fixed;
+  left:0px;
+  bottom:20px;
+  width:100%;
+  height:80px;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+}
+.trigButton{
+  height:70px;
+  width:70px;
+  margin:5px 20px;
+  border-radius:70px;
+  background-color:white;
+  cursor:pointer;
+  border:8px solid white;
+}
+.trigButton:hover{
+  border:8px solid pink;
+}
+.push{
+  border:8px solid magenta!important;
+}
+.connected{
+  background-color:cyan!important;
+}
+.disconnected{
+  background-color:magenta!important;
+}
+button{
+  width:100px;
+  height:30px;
+  font-size:16px;
+  cursor: pointer;
+}
+#startMes{
+  font-size: 20px;
+  text-align:center;
+  display:inline-block;
+  width:100%;
+  height:48px;
+  color:white;
+}
+#header{
+  position: fixed;
+  font-size: 16px;
+  width: 100%;
+  height: 16px;
+  top: 10px;
+  left: 0px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 16px;
+  z-index:200;
+  color:white;
+}
+#talogo{
+  position:fixed;
+  top:10px;
+  left:10px;
+  width:100px;
+  height:40px;
+  background-image:url("./img/talogo.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: left;
+}
+#start{
+  text-align:center;
+  display:inline-block;
+  width:240px;
+  height:50px;
+  font-size: 30px;
+  line-height: 50px;
+  vertical-align: center;
+  color:black;
+  background-color: pink;
+  border-radius: 50px;
+  cursor: pointer;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;  
+  -webkit-touch-callout: none;
+}
+
+.black{
+  color:black!important;
+}
+.bggreen{
+  background-color:darkgreen;
+}
+.front{
+  z-index: 100;
+}
+.c1{
+  width: 300px;
+  height: 100px;
+  margin-top:30px;
+}
+.c2{
+  width: 100%;
+  height: 128px;
+}
+#dtitle{
+  background-image: url("./img/title.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+#dpig{
+  background-image: url("./img/anim.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+</style>
+<script type="module">
+import protocol from "./protocol.mjs";
+import posmp from "./posmp2.mjs";
+import powt from "./lib/powt.mjs";
+import pomidi from "./pomidi.mjs";
+
+import testtext from "./testtext.mjs";
+import anim from "./animation.mjs";
+
+////////////////////////////////////////////////////
+// DOM Event handlers
+////////////////////////////////////////////////////
+let $outer = document.querySelector("#outer");
+let $startMes = document.querySelector("#startMes");
+let $connection = document.querySelector("#connection");
+let $cheen = document.querySelector("#cheen");
+let $jreen = document.querySelector("#jreen");
+let $text = document.querySelector("#text");
+let $header = document.querySelector("#header");
+let $start = document.querySelector("#start");
+let $pixi = document.querySelector("#pixi_wrapper");
+let $ramp = document.querySelector("#ramp");
+let $status = document.querySelector("#status");
+
+let $trigCheen = document.querySelector("#trigCheen");
+let $trigChicken = document.querySelector("#trigChicken");
+let $trigText = document.querySelector("#trigText");
+
+let myId = null;
+
+function changeConnectionDisp(){
+  if(wt.status == "disconnected"){
+    $ramp.classList.add("disconnected");
+    $ramp.classList.remove("connected");
+    $status.innerHTML = "disconnected..";
+
+  }else{
+    $ramp.classList.add("connected");
+    $ramp.classList.remove("disconnected");
+    $status.innerHTML = "connected!";
+  }
+}
+
+$trigCheen.onclick = async function(e){
+  trigPush(this);
+  onCheen(false);
+  let uint8Arr = protocol.encode("cheen",myId,"00000000");
+  await wt.sendDgram(uint8Arr);
+};
+
+$trigChicken.onclick = async function(e){
+  trigPush(this);
+  onJreen("chicken");
+  let uint8Arr = protocol.encode("jreen",myId,"00000000");
+  await wt.sendDgram(uint8Arr);
+};
+
+$trigText.onclick = async function(e){
+  trigPush(this);
+  let text = testtext.get();
+  onText(text,false);
+  let uint8Arr = protocol.encode("text",myId,"00000000",text);
+  await wt.sendDgram(uint8Arr);
+};
+
+function enableOuterRemove(){
+  $start.classList.remove("hide");
+  $start.onclick = (e) =>{
+    resumeSounds();
+    $outer.classList.add("hide");
+    $header.classList.add("hide");
+    smpCheen.play();
+    anim.startCheen();
+    startKeyHandler();
+  };
+}
+
+function trigPush(elm){
+  elm.classList.add("push");
+  setTimeout(()=>{
+    elm.classList.remove("push");
+  },500);
+}
+
+////////////////////////////////////////////////////
+// Key Event handlers
+////////////////////////////////////////////////////
+function startKeyHandler(){
+  document.body.onkeydown = function(ev){
+    console.log("keydown: "+ev.keyCode);
+    var index = -1;
+    switch(ev.keyCode){
+    case 49:
+      $trigCheen.click();
+      break;
+    case 50:
+      $trigChicken.click();
+      break;
+    case 51:
+      $trigText.click();
+      break;
+    default: break;
+    }
+  };
+}
+
+////////////////////////////////////////////////////
+// sound player / MIDI Event Handlers
+////////////////////////////////////////////////////
+let smpCheen = null;
+let smpChicken = null;
+let smpEfxs = [];
+let midi = null;
+
+const efxs = [
+  "./mp3/efx1.mp3",
+  "./mp3/efx2.mp3",
+  "./mp3/efx3.mp3",
+  "./mp3/efx4.mp3",
+  "./mp3/efx5.mp3"
+];
+
+async function initSounds(){
+  smpCheen = new posmp();
+  await smpCheen.init("./mp3/cheen.mp3");
+
+  smpChicken = new posmp();
+  await smpChicken.init("./mp3/chicken.mp3");
+
+  for(let cnt=0;cnt<efxs.length;cnt ++){
+    let efx = new posmp();
+    await efx.init(efxs[cnt]);
+    smpEfxs.push(efx);
+  }
+  midi = new pomidi();
+  await midi.init();
+  midi.setHandler(onMIDIEvent);
+}
+
+async function resumeSounds(){
+  smpCheen.resume();
+  smpChicken.resume();
+  for(let cnt=0;cnt<efxs.length;cnt ++){
+    smpEfxs[cnt].resume();
+  }
+}
+
+function physicalCheen(){
+  midi.sendNoteOn(48);
+}
+
+function onMIDIEvent(e){
+  var message = e.data[0] & 0xf0;
+  console.log("mes: "+message+" d1:"+e.data[1]+" d2:"+e.data[2]);
+  switch (message){
+  case 0x90 :
+    switch(e.data[1]){
+    case 127:
+      $trigCheen.click();
+      break;
+    case 100:
+      $trigChicken.click();
+      break;
+    default:break;
+    }
+    break;
+  case 0x80 :
+    // noteoff
+    break;
+  case 0xB0 :
+    // CC
+    break;
+  default :
+    break;
+  }
+}
+
+
+////////////////////////////////////////////////////
+// Event Actions 
+////////////////////////////////////////////////////
+function onCheen(physical){
+  anim.startCheen();
+  smpCheen.play();
+  if(physical){
+    physicalCheen();
+  }
+}
+
+async function onJreen(mode){
+  anim.startChicken();
+  if(mode == "chicken"){
+    smpChicken.play();
+  }else{
+    for(let cnt=0;cnt < 8;cnt ++){
+      smpCheen.play();
+      await smpCheen.wait(100);
+      physicalCheen();
+    }
+  }
+}
+
+function onText(text,physical){
+  if(physical){
+    physicalCheen();
+  }
+  smpEfxs[Math.floor(Math.random()*smpEfxs.length)].play();
+  anim.addText(text);
+}
+
+////////////////////////////////////////////////////
+// WebTransport 
+////////////////////////////////////////////////////
+const ENDPOINT = `https://${window.location.hostname}:${window.location.port}`;
+const wt = new powt();
+
+async function received(value){
+  let data = protocol.parse(value);
+  console.log(">>>>> "+data.type+" event received!");
+  switch(data.type){
+  case "myId":
+    myId = data.id;
+    break;
+  case "cheen":
+    onCheen(true);
+    break;
+  case "jreen":
+    await onJreen("cheen");
+    break;
+  case "text":
+    onText(data.text,true);
+    break;
+  default:break;
+  }
+}
+
+let retryInterval = null;
+
+function onStatusChange(_status){
+  console.log("onStatusChange : "+_status);
+  changeConnectionDisp();
+  if(_status == "disconnected"){
+    if(!retryInterval){
+      retryInterval = setInterval(async (e)=>{
+        await wt.connect(ENDPOINT);
+      },5000);
+    }
+  }else{
+    if(retryInterval){
+      clearInterval(retryInterval);
+      retryInterval = null;
+    }
+  }
+}
+
+async function startConnection(){
+  wt.onDgramReceived = received;
+  wt.onStatusChange = onStatusChange;
+  await wt.connect(ENDPOINT);
+  console.log("connected !");
+}
+
+if(!wt.available()){
+  console.log("webTransport unsupported!");
+  $startMes.innerHTML = "未対応ブラウザです。対応ブラウザでご利用ください。<br>Chrome、Opera、Edgeの最新版に対応しています。(iOSを除く)";
+}else{
+  console.log("webTransport supported!");
+  await initSounds();
+  $startMes.innerHTML = "ロードが完了しました。<br>ボタンをタップしてはじめてましょう！<br>↓↓↓";
+  enableOuterRemove();
+  await startConnection();
+  await anim.init($pixi);
+}
+
+</script>
+</body>
+</html>

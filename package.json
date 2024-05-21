@@ -1,0 +1,14 @@
+{
+  "name": "cheen2024",
+  "version": "0.0.1",
+  "description": "cheen2024",
+  "main": "app.mjs",
+  "author": "D.F.Mac.@TripArts Music",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "powt": "^0.0.3"
+  }
+}
